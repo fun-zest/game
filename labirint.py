@@ -26,7 +26,7 @@ class Bullet(Baza):
         if self.rect.x > W + 10:
             self.kill()
 
-#скорпион
+#хорошие
 class Hero(Baza):
     def update (self):
         self.rect.x += self.x_speed
@@ -64,7 +64,7 @@ class Hero(Baza):
         bullet = Bullet(self.rect.x, self.rect.y, 45, 45, 'sfera.png', 10, 7)
         bullets.add(bullet)
 
-#саб-зиро
+#злодеи
 class Enemy(Baza):
     def update(self):
         if self.rect.right >= W:
@@ -98,7 +98,7 @@ class Wall_color(sprite.Sprite):
 W, H = 1000, 1000
 win = display.set_mode((1000, 1000)) #, flags = FULLSCREEN
 display.set_caption('Бродилка')
-display.set_icon(image.load('skulls.png'))
+display.set_icon(image.load('icon.png'))
 
 #фоны
 background = image.load('fonmk.jpg')
@@ -110,9 +110,9 @@ win_background = image.load('scorpionw.jpeg')
 scorpion = Hero(x = 100, y = 800, w = 125, h = 125, filename = 'scorpion.png', health = 10)
 
 enemies = sprite.Group()
-subzero = Enemy(x = 500, y = 600, w = 125, h = 125, filename = 'sub-zero.png', health = 10)
-enemies.add(subzero)
-subzero.x_speed = -1
+shao_khan = Enemy(x = 500, y = 600, w = 150, h = 150, filename = 'shao-khan.png', health = 10)
+enemies.add(shao_khan)
+shao_khan.x_speed = -1
 
 #пули
 bullets = sprite.Group()
@@ -138,7 +138,7 @@ Wall_color(x=735,y=800,w=50,h=200,color =(255,162,0))
 Wall_color(x=0,y=0,w=1,h=1000,color =(255,162,0))
 Wall_color(x=0,y=0,w=1000,h=1,color =(255,162,0))
 Wall_color(x=999,y=0,w=1,h=1000,color =(255,162,0))
-Wall_color(x=0,y=999,w=1000,h=1,color =(255,162,0))
+#Wall_color(x=0,y=999,w=1000,h=1,color =(255,162,0))
 
 game_mode = 'game'
 run = True
@@ -187,7 +187,17 @@ while run:
         bullets.update()
         bullets.draw(win)
     
-    if sprite.collide_rect(scorpion, final):
+        if sprite.collide_rect(scorpion, final):
+            if len(enemies) == 0:
+                game_mode = 'kill_final'
+            else:
+                game_mode = 'not_kill_final'
+    
+    if game_mode == 'kill_final':
+        win_background.draw()
+        fatality1.draw()
+    
+    if game_mode == 'not_kill_final':
         win_background.draw()
         winner.draw()
 
