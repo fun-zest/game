@@ -19,7 +19,7 @@ class Baza(sprite.Sprite):
 class Bullet(Baza):
     def __init__ (self, x, y, w, h, filename, health, speed):
         Baza.__init__(self, x, y, w, h, filename, health)
-        self.speed = -7
+        self.speed = speed
 
     def update(self):
         self.rect.x += self.speed
@@ -61,7 +61,7 @@ class Hero(Baza):
         self.draw()
 
     def fire(self):
-        bullet = Bullet(self.rect.x, self.rect.y, 45, 45, 'sfera.png', 10, 7)
+        bullet = Bullet(self.rect.x, self.rect.y, 45, 45, 'sfera.png', 10, self.x_speed)
         bullets.add(bullet)
 
 #злодеи
@@ -76,11 +76,11 @@ class Enemy(Baza):
         self.rect.x += self.x_speed
         self.draw()
     
-
+#стены
 class Wall_picture(Baza):
     def update(self):
         self.draw()
-
+#цвета стен
 class Wall_color(sprite.Sprite):
     def __init__(self,x,y,w,h,color):
         super().__init__()
@@ -94,10 +94,10 @@ class Wall_color(sprite.Sprite):
     def update(self):
         self.draw()
 
-
+#дисплей
 W, H = 1000, 1000
 win = display.set_mode((1000, 1000)) #, flags = FULLSCREEN
-display.set_caption('Бродилка')
+display.set_caption('Mortal Kombat')
 display.set_icon(image.load('icon.png'))
 
 #фоны
@@ -138,7 +138,8 @@ Wall_color(x=735,y=800,w=50,h=200,color =(255,162,0))
 Wall_color(x=0,y=0,w=1,h=1000,color =(255,162,0))
 Wall_color(x=0,y=0,w=1000,h=1,color =(255,162,0))
 Wall_color(x=999,y=0,w=1,h=1000,color =(255,162,0))
-#Wall_color(x=0,y=999,w=1000,h=1,color =(255,162,0))
+Wall_color(x=150,y=999,w=300,h=1,color =(255,162,0))
+Wall_color(x=550,y=999,w=450,h=1,color =(255,162,0))
 
 game_mode = 'game'
 run = True
