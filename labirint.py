@@ -98,6 +98,7 @@ class Wall_color(sprite.Sprite):
 W, H = 1000, 1000
 win = display.set_mode((1000, 1000)) #, flags = FULLSCREEN
 display.set_caption('Бродилка')
+display.set_icon(image.load('skulls.png'))
 
 #фоны
 background = image.load('fonmk.jpg')
@@ -141,6 +142,8 @@ Wall_color(x=0,y=999,w=1000,h=1,color =(255,162,0))
 
 game_mode = 'game'
 run = True
+
+timer = time.Clock()
 
 while run:
     for e in event.get():
@@ -195,4 +198,5 @@ while run:
     sprite.groupcollide(enemies, bullets, True, True)
     sprite.groupcollide(walls, bullets, False, True)
 
+    timer.tick(120)
     display.update()
