@@ -19,7 +19,10 @@ class Baza(sprite.Sprite):
 class Bullet(Baza):
     def __init__ (self, x, y, w, h, filename, health, speed):
         Baza.__init__(self, x, y, w, h, filename, health)
-        self.speed = speed
+        if speed != 0:
+            self.speed = speed
+        else:
+            self.speed = 5
 
     def update(self):
         self.rect.x += self.speed
@@ -126,8 +129,8 @@ fatality1 = Baza(x = 0, y = 0, w = 400,  h = 200, filename = 'fatality.jpg', hea
 winner = Baza(x = 10, y = 50, w = 400,  h = 200, filename = 'win.png', health = 10)
 
 # поражение
-defeat_background = Baza(x = 0, y = 0, w = 1000,  h = 1000, filename = 'sub-zerow.jpg', health = 10)
-fatality2 = Baza(x = 0, y = 0, w = 300,  h = 200, filename = 'fatality.jpg', health = 10)
+defeat_background = Baza(x = 0, y = 0, w = 1000,  h = 1000, filename = 'shao-khan_winner.jpg', health = 10)
+fatality2 = Baza(x = 0, y = 799, w = 1000,  h = 200, filename = 'fatality.jpg', health = 10)
 
 # стены
 walls = sprite.Group()
