@@ -1,6 +1,6 @@
 # Разработай свою игру в этом файле!
 from pygame import *
-from random import randint
+from random import randint, choice
 
 #база
 class Baza(sprite.Sprite):
@@ -22,11 +22,11 @@ class Bullet(Baza):
         if speed != 0:
             self.speed = speed
         else:
-            self.speed = 5
+            self.speed = choice([-2,2])
 
     def update(self):
         self.rect.x += self.speed
-        if self.rect.x > W + 10:
+        if self.rect.right > W or self.rect.x < 0:
             self.kill()
 
 #хорошие
@@ -79,6 +79,24 @@ class Enemy(Baza):
         self.rect.x += self.x_speed
         self.draw()
     
+class ShoterEnemy(Baza):
+    def update(self):
+        if self.rect.bottom >= H:
+            self.y_speed = -2 - randint(0, 2)
+
+        if self.rect.top < 0:
+            self.y_speed = 2 + randint(0, 2)
+        
+        if randint(0,100) == 100:
+            self.fire()
+
+        self.rect.y += self.y_speed
+        self.draw()
+
+    def fire(self):
+        b = Bullet(self.rect.x, self.rect.y, 45, 45, 'sfera.png', 10, self.x_speed)
+        enemy_bullets.add(b)
+
 #стены
 class Wall_picture(Baza):
     def update(self):
@@ -113,12 +131,13 @@ win_background = image.load('scorpionw.jpeg')
 scorpion = Hero(x = 100, y = 800, w = 125, h = 125, filename = 'scorpion.png', health = 10)
 
 enemies = sprite.Group()
-shao_khan = Enemy(x = 500, y = 600, w = 150, h = 150, filename = 'shao-khan.png', health = 10)
+shao_khan = ShoterEnemy(x = 800, y = 600, w = 150, h = 150, filename = 'shao-khan.png', health = 10)
 enemies.add(shao_khan)
-shao_khan.x_speed = -1
+shao_khan.y_speed = -1
 
 #пули
 bullets = sprite.Group()
+enemy_bullets = sprite.Group()
 
 # победа
 final = Baza(x = 450, y = 875, w = 175,  h = 175, filename = 'skulls.png', health = 10)
@@ -190,6 +209,9 @@ while run:
 
         bullets.update()
         bullets.draw(win)
+
+        enemy_bullets.update()
+        enemy_bullets.draw(win)
     
         if sprite.collide_rect(scorpion, final):
             if len(enemies) == 0:
