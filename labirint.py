@@ -24,6 +24,9 @@ class Bullet(Baza):
         else:
             self.speed = choice([-2, 2])
 
+        if self.speed < 0:
+            self.image = transform.flip(self.image,True,False)
+
     def update(self):
         self.rect.x += self.speed
         if self.rect.right > W or self.rect.x < 0:
@@ -32,6 +35,7 @@ class Bullet(Baza):
 #хорошие
 class Hero(Baza):
     def update (self):
+        global game_mode
         self.rect.x += self.x_speed
         self.rect.y += self.y_speed
 
@@ -57,9 +61,14 @@ class Hero(Baza):
                 self.rect.y = max(wall.rect.bottom,self.rect.y)
 
         touched = sprite.spritecollide(self,enemies,False)
+        touched_bullets = sprite.spritecollide(self,enemy_bullets,False)
         if touched:
-            global game_mode
-            game_mode = 'defeat'
+            if type(touched[0]) == ShooterEnemy:
+                game_mode = 'defeat_from_goro'
+            else:
+                game_mode = 'defeat_from_shao-khan'
+        if touched_bullets:
+            game_mode = 'defeat_from_goro'
         
         self.draw()
 
@@ -71,10 +80,10 @@ class Hero(Baza):
 class Enemy(Baza):
     def update(self):
         if self.rect.right >= W:
-            self.x_speed = -2 - randint(0, 2)
+            self.x_speed = -2 - randint(0, 1)
 
         if self.rect.x < 350:
-            self.x_speed = +2 + randint(0, 2)
+            self.x_speed = +2 + randint(0, 1)
         
         self.rect.x += self.x_speed
         self.draw()
@@ -82,13 +91,13 @@ class Enemy(Baza):
 
 class ShooterEnemy(Baza):
     def update(self):
-        if self.rect.bottom >= H:
+        if self.rect.bottom >= 500:
             self.y_speed = -2 - randint(0, 2)
 
         if self.rect.top < 0:
             self.y_speed = 2 + randint(0, 2)
 
-        if randint(0,100) == 100:
+        if randint(0,150) == 150:
             self.fire()
 
         self.rect.y += self.y_speed
@@ -96,24 +105,6 @@ class ShooterEnemy(Baza):
 
     def fire(self):
         b = Bullet(self.rect.x, self.rect.y, 45, 45, 'shoot.png', 10, self.x_speed)
-        enemy_bullets.add(b)
-    
-class ShoterEnemy(Baza):
-    def update(self):
-        if self.rect.bottom >= H:
-            self.y_speed = -2 - randint(0, 2)
-
-        if self.rect.top < 0:
-            self.y_speed = 2 + randint(0, 2)
-        
-        if randint(0,100) == 100:
-            self.fire()
-
-        self.rect.y += self.y_speed
-        self.draw()
-
-    def fire(self):
-        b = Bullet(self.rect.x, self.rect.y, 45, 45, 'sfera.png', 10, self.x_speed)
         enemy_bullets.add(b)
 
 #стены
@@ -140,19 +131,21 @@ win = display.set_mode((1000, 1000)) #, flags = FULLSCREEN
 display.set_caption('Mortal Kombat')
 display.set_icon(image.load('icon.png'))
 
-#фоны
+#фон
 background = image.load('fonmk.jpg')
 background = transform.scale(background, (W, H))
-defeat_background = image.load('bad.jpg')
-win_background = image.load('scorpionw.jpeg')
 
 #персонажи
 scorpion = Hero(x = 100, y = 800, w = 125, h = 125, filename = 'scorpion.png', health = 10)
 
 enemies = sprite.Group()
-shao_khan = ShoterEnemy(x = 800, y = 600, w = 150, h = 150, filename = 'shao-khan.png', health = 10)
+shao_khan = Enemy(x = 800, y = 600, w = 150, h = 150, filename = 'shao-khan.png', health = 10)
 enemies.add(shao_khan)
-shao_khan.y_speed = -1
+shao_khan.x_speed = -1
+
+goro = ShooterEnemy(x = 600, y = 1, w = 150, h = 150, filename = 'goro.png', health = 10)
+enemies.add(goro)
+goro.y_speed = -1
 
 #пули
 bullets = sprite.Group()
@@ -166,9 +159,12 @@ fatality1 = Baza(x = 0, y = 0, w = 400,  h = 200, filename = 'fatality.jpg', hea
 # без него
 winner = Baza(x = 10, y = 50, w = 400,  h = 200, filename = 'win.png', health = 10)
 
-# поражение
-defeat_background = Baza(x = 0, y = 0, w = 1000,  h = 1000, filename = 'shao-khan_winner.jpg', health = 10)
+# поражение от Шао-Кана
+defeat_background_sk = Baza(x = 0, y = 0, w = 1000,  h = 1000, filename = 'shao-khan_winner.jpg', health = 10)
 fatality2 = Baza(x = 0, y = 799, w = 1000,  h = 200, filename = 'fatality.jpg', health = 10)
+#поражение от Горо
+defeat_background_goro = Baza(x = 0, y = 0, w = 1000,  h = 1000, filename = 'goro_winner.png', health = 10)
+fatality3 = Baza(x = 600, y = 0, w = 400,  h = 200, filename = 'fatality.jpg', health = 10)
 
 # стены
 walls = sprite.Group()
@@ -246,12 +242,17 @@ while run:
         win_background.draw()
         winner.draw()
 
-    if game_mode == 'defeat':
-        defeat_background.draw()
+    if game_mode == 'defeat_from_shao-khan':
+        defeat_background_sk.draw()
         fatality2.draw()
-    
+
+    if game_mode == 'defeat_from_goro':
+        defeat_background_goro.draw()
+        fatality3.draw()
+
     sprite.groupcollide(enemies, bullets, True, True)
     sprite.groupcollide(walls, bullets, False, True)
+    sprite.groupcollide(walls, enemy_bullets, False, True)
 
     timer.tick(120)
     display.update()
