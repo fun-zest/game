@@ -1,6 +1,6 @@
 # Разработай свою игру в этом файле!
 from pygame import *
-from random import randint
+from random import randint, choice
 
 #база
 class Baza(sprite.Sprite):
@@ -22,7 +22,7 @@ class Bullet(Baza):
         if speed != 0:
             self.speed = speed
         else:
-            self.speed = 5
+            self.speed = choice([-2, 2])
 
     def update(self):
         self.rect.x += self.speed
@@ -78,6 +78,25 @@ class Enemy(Baza):
         
         self.rect.x += self.x_speed
         self.draw()
+
+
+class ShooterEnemy(Baza):
+    def update(self):
+        if self.rect.bottom >= H:
+            self.y_speed = -2 - randint(0, 2)
+
+        if self.rect.top < 0:
+            self.y_speed = 2 + randint(0, 2)
+
+        if randint(0,100) == 100:
+            self.fire()
+
+        self.rect.y += self.y_speed
+        self.draw()
+
+    def fire(self):
+        b = Bullet(self.rect.x, self.rect.y, 45, 45, 'shoot.png', 10, self.x_speed)
+        enemy_bullets.add(b)
     
 #стены
 class Wall_picture(Baza):
