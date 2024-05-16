@@ -11,7 +11,6 @@ class Baza(sprite.Sprite):
         self.image = transform.scale(image.load(filename), (w,h))
         self.x_speed, self.y_speed = 0, 0
 
-
     def draw(self):
         win.blit(self.image, (self.rect.x, self.rect.y))
 
@@ -76,7 +75,7 @@ class Hero(Baza):
         bullet = Bullet(self.rect.x, self.rect.y, 45, 45, 'sfera.png', 10, self.x_speed)
         bullets.add(bullet)
 
-#злодеи
+#злодей
 class Enemy(Baza):
     def update(self):
         if self.rect.right >= W:
@@ -88,7 +87,7 @@ class Enemy(Baza):
         self.rect.x += self.x_speed
         self.draw()
 
-
+#злодей-стрелок
 class ShooterEnemy(Baza):
     def update(self):
         if self.rect.bottom >= 500:
@@ -111,6 +110,7 @@ class ShooterEnemy(Baza):
 class Wall_picture(Baza):
     def update(self):
         self.draw()
+
 #цвета стен
 class Wall_color(sprite.Sprite):
     def __init__(self,x,y,w,h,color):
